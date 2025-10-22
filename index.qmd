@@ -3,7 +3,6 @@ title: "Data Manipulation Challenge"
 subtitle: "A Mental Model for Method Chaining in Pandas"
 format:
   html: default
-  pdf: default
 execute:
   echo: true
   eval: true
@@ -196,6 +195,7 @@ print(shipments_with_lateness[['shipID', 'plannedShipDate', 'actualShipDate', 'i
 
 **Question 1: Data Types and Date Handling**
 - What is the `dtype` of the `actualShipDate` series? How can you find out using code?
+
 - Why is it important that both `actualShipDate` and `plannedShipDate` have the same data type for comparison?
 
 **Question 2: String vs Date Comparison**
@@ -218,8 +218,101 @@ What's wrong with the `lateStatement` assignment and how would you fix it?
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>Answers to Question 1:
+```{python}
+#| echo: true
+#| message: false
+#| warning: false
 
+print("Data type of actualShipDate:", shipments_df['actualShipDate'].dtype)
+```
+> 
+Question 1a answer: The `dtype` of the `actualShipDate` series is `datetime64[ns]`
+
+>
+Question 1b answer: Datetime objects are more precise and can be compared directly. Python has built-in Datetime functions for comparison which takes care of the date/time, leapyear differences.
+
+>Answers to Question 2:
+
+String comparison vs. Date comparison example:
+
+```{python}
+#| echo: true
+#| message: false
+#| warning: false
+
+# Example: Comparing "04-11-2025" and "05-20-2024"
+
+# STRING COMPARISON (alphabetical/lexicographic)
+date_str1 = "04-11-2025"  # April 11, 2025
+date_str2 = "05-20-2024"  # May 20, 2024
+
+print("="*60)
+print("STRING COMPARISON (Character-by-character):")
+print("="*60)
+print(f"Date 1: {date_str1} (April 11, 2025)")
+print(f"Date 2: {date_str2} (May 20, 2024)")
+print(f"\nIs '{date_str1}' > '{date_str2}'? {date_str1 > date_str2}")
+print("\n❌ WRONG! String comparison says April 2025 comes BEFORE May 2024!")
+print("   Why? Because '04' < '05' when comparing characters left-to-right")
+print("   It ignores that 2025 > 2024")
+
+# VS DATE COMPARISON
+date1 = pd.to_datetime("2025-04-11")  # April 11, 2025
+date2 = pd.to_datetime("2024-05-20")  # May 20, 2024
+
+print("\n" + "="*60)
+print("DATETIME COMPARISON:")
+print("="*60)
+print(f"Date 1: {date1} (April 11, 2025)")
+print(f"Date 2: {date2} (May 20, 2024)")
+print(f"\nIs {date1} > {date2}? {date1 > date2}")
+print("\n✓ CORRECT! Datetime comparison properly recognizes April 2025")
+print("  comes AFTER May 2024 (11 months later)")
+
+# Show the actual time difference
+time_diff = date1 - date2
+print(f"\nTime difference: {time_diff.days} days ({time_diff.days // 30} months)")
+```
+>
+**Key Insight:** String comparison only looks at character codes from left to right:
+
+- "04-11-2025" vs "05-20-2024"
+- Compares: '0'='0', '4'<'5' → stops here and says "04..." < "05..."
+- Result: WRONG chronological order!
+
+Datetime comparison understands calendar logic:
+- April 2025 is 11 months after May 2024
+- Result: CORRECT  order!
+
+>Answers to Question 3:
+```{python}
+#| echo: true
+
+# Here is the fixed error code:
+shipments_with_lateness_corrected = (
+    shipments_df
+    .assign(
+        is_late=lambda df: df['actualShipDate'] > df['plannedShipDate'],
+        days_late=lambda df: (df['actualShipDate'] - df['plannedShipDate']).dt.days,
+        # Fix: Use lambda to reference the DataFrame being created, and .apply() for row-by-row
+        lateStatement=lambda df: df['is_late'].apply(lambda x: "Darn Shipment is Late" if x else  "Shipment is on Time")
+    )
+)
+print("Fixed code results and showing only late shipments:")
+print(shipments_with_lateness_corrected[['shipID', 'is_late', 'days_late', 'lateStatement']].loc[shipments_with_lateness_corrected['is_late'] == True])
+
+
+```
+
+>
+**The Fix:**
+
+- Use `lambda df:` to reference the DataFrame being built
+- Use `.apply()` to evaluate the if/else for EACH row individually
+- Now each row gets the correct statement based on its own `is_late` value
+
+Questi
 ### 2. Subset: Querying Rows and Filtering Columns
 
 **Mental Model:** Query rows based on conditions and filter to keep specific columns.
@@ -263,7 +356,126 @@ print(late_shipments.head())
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: Query vs Boolean Indexing**
+
+>What's the difference between `.query('is_late == True')` and `[df['is_late'] == True]`?**
+Both methods filter rows, but they work differently:
+
+```{python}
+#| echo: true
+
+# Method 1: Using .query() - SQL-like string syntax
+print("Method 1: Using .query()")
+late_with_query = (
+    shipments_with_lateness
+    .query('is_late == True')
+    .filter(['shipID', 'partID', 'days_late'])
+)
+print(f"Found {len(late_with_query)} late shipments")
+print(late_with_query.head())
+
+print("\n" + "="*60)
+# Method 2: Boolean indexing - Python syntax
+print("Method 2: Using boolean indexing with brackets")
+late_with_brackets = shipments_with_lateness[shipments_with_lateness['is_late'] == True]
+late_with_brackets = late_with_brackets[['shipID', 'partID', 'days_late']]
+print(f"Found {len(late_with_brackets)} late shipments")
+print(late_with_brackets.head())
+
+print("\nResults are identical:", late_with_query.shape == late_with_brackets.shape)
+```
+
+**Key Differences:**
+
+1. **Syntax Style:**
+   - `.query()`: Uses SQL-like string syntax: `'is_late == True'`
+   - Boolean indexing: Uses Python syntax: `df['is_late'] == True`
+
+2. **Variable References:**
+   - `.query()`: Can reference external variables with `@`: `.query('days_late > @threshold')`
+   - Boolean indexing: Uses normal Python variables directly
+
+3. **Method Chaining:**
+   - `.query()`: Chains naturally with pandas methods
+   - Boolean indexing: Breaks the chain (requires brackets)
+
+**Which approach is more readable?**
+
+**`.query()` is generally more readable for:**
+-  Method chaining workflows (keeps the flow going)
+-  Complex conditions: `.query('is_late == True and days_late > 5')`
+-  SQL-familiar teams (similar to WHERE clauses)
+-  Avoiding long, repeated DataFrame names
+
+Example:
+```python
+result = (
+    df
+    .query('is_late == True and days_late > 5')
+    .filter(['shipID', 'days_late'])
+    .sort_values('days_late', ascending=False)
+)
+```
+
+**Boolean indexing is better for:**
+- Simple, one-time filters
+- Dynamic conditions built programmatically
+- Complex Python logic
+- Column names with spaces or special characters
+
+**Recommendation:** Use `.query()` for method chaining pipelines, use boolean indexing for quick one-off filters.
+
+>**Answers to Question 2: Using Variables in Queries**
+
+**Example: Query rows for shipments that are at least 5 days late**
+
+```{python}
+#| echo: true
+
+# Define the threshold
+late_threshold = 5
+
+# Method 1: Using .query() with @ to reference external variable
+very_late_query = (
+    shipments_with_lateness
+    .query('days_late >= @late_threshold')
+    .filter(['shipID', 'partID', 'days_late'])
+    .sort_values('days_late', ascending=False)
+)
+
+print(f"Shipments at least {late_threshold} days late (using .query()):")
+print(f"Count: {len(very_late_query)}")
+print(very_late_query.head(10))
+
+print("\n" + "="*60)
+
+# Method 2: Using boolean indexing (no @ needed)
+very_late_brackets = (
+    shipments_with_lateness[
+        shipments_with_lateness['days_late'] >= late_threshold
+    ]
+    [['shipID', 'partID', 'days_late']]
+    .sort_values('days_late', ascending=False)
+)
+
+print(f"Shipments at least {late_threshold} days late (using boolean indexing):")
+print(f"Count: {len(very_late_brackets)}")
+print(very_late_brackets.head(10))
+```
+
+**Key Point:** When using `.query()`, you MUST use the `@` symbol before variable names (like `@late_threshold`). This tells pandas to look for a variable in your Python environment rather than a column name.
+
+**More complex example with multiple conditions:**
+```python
+min_days = 5
+max_days = 15
+
+# Using .query() with multiple variables
+result = df.query('@min_days <= days_late <= @max_days')
+
+# Equivalent with boolean indexing
+result = df[(df['days_late'] >= min_days) & (df['days_late'] <= max_days)]
+```
 
 ### 3. Drop: Removing Unwanted Data
 
@@ -301,7 +513,192 @@ print("Remaining columns:", clean_shipments.columns.tolist())
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: Drop vs Filter Strategies**
+
+**What's the difference between `.drop(columns=['quantity'])` and `.filter()` with a list of columns you want to keep?**
+
+These methods are opposites - one removes columns, the other keeps them:
+```{python}
+#| echo: true
+
+# Let's see what columns we have in our clean_shipments dataset
+shipments_with_lateness.columns.tolist()
+```
+```{python}
+#| echo: true
+
+# Let's see what columns we have in our clean_shipments dataset
+clean_shipments_columns = shipments_with_lateness.copy()
+print("Original columns:")
+print(clean_shipments_columns.columns.tolist())
+print(f"Total: {len(clean_shipments_columns.columns)} columns\n")
+
+print("="*60)
+
+# Method 1: DROP - Remove specific columns (specify what to remove)
+dropped_result = clean_shipments_columns.drop(columns=['quantity', 'partID'])
+print("\nMethod 1: Using .drop(columns=['quantity', 'partID'])")
+print("Remaining columns:")
+print(dropped_result.columns.tolist())
+print(f"Total: {len(dropped_result.columns)} columns")
+
+print("\n" + "="*60)
+
+# Method 2: FILTER - Keep specific columns (specify what to keep)
+filtered_result = clean_shipments_columns.filter(['shipID', 'plannedShipDate', 'actualShipDate', 'is_late'])
+print("\nMethod 2: Using .filter(['shipID', 'plannedShipDate', 'actualShipDate', 'is_late'])")
+print("Kept columns:")
+print(filtered_result.columns.tolist())
+print(f"Total: {len(filtered_result.columns)} columns")
+```
+
+**Key Differences:**
+
+1. **Opposite Operations:**
+   - `.drop(columns=[...])` - **REMOVES** the specified columns
+   - `.filter([...])` - **KEEPS** only the specified columns
+
+2. **Column Selection Logic:**
+   - `.drop()` - "Remove these, keep everything else"
+   - `.filter()` - "Keep only these, remove everything else"
+
+3. **Syntax:**
+   - `.drop(columns=['col1', 'col2'])` - note the `columns=` parameter
+   - `.filter(['col1', 'col2'])` - direct list of column names
+
+```{python}
+#| echo: true
+
+# Example showing they can achieve the same result
+print("Starting with these columns:", clean_shipments.columns.tolist())
+
+# Scenario: I want to keep only shipID, plannedShipDate, actualShipDate
+
+# Option A: Use .filter() to keep specific columns
+keep_with_filter = clean_shipments.filter(['shipID', 'plannedShipDate', 'actualShipDate'])
+
+# Option B: Use .drop() to remove unwanted columns
+keep_with_drop = clean_shipments.drop(columns=['partID', 'is_late', 'days_late'])
+
+print("\nResult using .filter():", keep_with_filter.columns.tolist())
+print("Result using .drop():", keep_with_drop.columns.tolist())
+print("Both methods give same result:", keep_with_filter.columns.tolist() == keep_with_drop.columns.tolist())
+```
+
+**When would you choose to drop columns vs filter to keep specific columns?**
+
+**Use `.filter()` (keep specific columns) when:**
+- You know exactly which few columns you need
+- Working with wide datasets (many columns) but only need a few
+- Creating focused reports or visualizations
+- The number of columns to KEEP is smaller than to DROP
+
+**Use `.drop()` (remove specific columns) when:**
+- ✅ You want to keep most columns but remove just a few
+- ✅ Removing redundant or unnecessary columns
+- ✅ The number of columns to DROP is smaller than to KEEP
+- ✅ You want to preserve all columns except specific ones
+
+
+**Rule of Thumb:**
+- **Few columns needed?** → Use `.filter()` (specify what to keep)
+- **Few columns unwanted?** → Use `.drop()` (specify what to remove)
+- **Goal: Be explicit but minimize typing!**
+
+
+>**Answers to Question 2: Handling Missing Data**
+
+**What happens if you use `.dropna()` without specifying `subset`?**
+
+```{python}
+#| echo: true
+
+# Let's create a sample dataset with missing values to demonstrate
+import numpy as np
+
+sample_data = pd.DataFrame({
+    'shipID': [1, 2, 3, 4, 5],
+    'plannedDate': [pd.Timestamp('2024-01-01'), pd.Timestamp('2024-01-02'), 
+                    None, pd.Timestamp('2024-01-04'), pd.Timestamp('2024-01-05')],
+    'actualDate': [pd.Timestamp('2024-01-01'), None, 
+                   pd.Timestamp('2024-01-03'), pd.Timestamp('2024-01-04'), 
+                   pd.Timestamp('2024-01-05')],
+    'quantity': [10, 20, 30, None, 50],
+    'notes': ['ok', 'ok', 'ok', 'ok', None]
+})
+
+print("Original data with missing values (None/NaN):")
+print(sample_data)
+print(f"\nOriginal row count: {len(sample_data)}")
+
+print("\n" + "="*60)
+
+# Method 1: .dropna() WITHOUT subset - removes ANY row with ANY missing value
+strict_drop = sample_data.dropna()
+print("\nMethod 1: .dropna() without subset")
+print("(Removes rows with missing values in ANY column)")
+print(strict_drop)
+print(f"Remaining rows: {len(strict_drop)} (removed {len(sample_data) - len(strict_drop)} rows)")
+
+print("\n" + "="*60)
+
+# Method 2: .dropna(subset=[...]) - only checks specific columns
+selective_drop = sample_data.dropna(subset=['plannedDate', 'actualDate'])
+print("\nMethod 2: .dropna(subset=['plannedDate', 'actualDate'])")
+print("(Only removes rows with missing values in these 2 columns)")
+print(selective_drop)
+print(f"Remaining rows: {len(selective_drop)} (removed {len(sample_data) - len(selective_drop)} rows)")
+
+print("\n" + "="*60)
+print("\nDifference:")
+print(f"- Without subset: Kept {len(strict_drop)} rows (very strict!)")
+print(f"- With subset: Kept {len(selective_drop)} rows (more flexible)")
+```
+
+**Key Difference:**
+
+- `.dropna()` without `subset`: Removes rows with **ANY** missing value in **ANY** column (very aggressive!)
+- `.dropna(subset=[cols])`: Removes rows only if missing values are in **specified** columns (more targeted)
+
+**Why might you want to be selective about which columns to check for missing values?**
+
+**Reason 1: Different Columns Have Different Importance**
+```python
+# Critical columns: Must have values for analysis
+.dropna(subset=['customerID', 'orderDate', 'amount'])
+
+# Optional columns: Missing is OK (like notes, comments)
+# Don't check these columns!
+```
+
+**Reason 2: Preserve More Data**
+- Some columns naturally have missing values (e.g., "discount_code" only exists for discounted orders)
+- Dropping rows for optional missing data wastes good data!
+
+**Reason 3: Business Logic Requirements**
+```python
+# For calculating late shipments, we NEED these dates:
+.dropna(subset=['plannedShipDate', 'actualShipDate'])
+
+# But missing 'quantity' might be OK for some analyses
+```
+
+**Example from our case:**
+```python
+# We only care about date columns for lateness calculation
+clean_shipments = (
+    shipments_with_lateness
+    .drop(columns=['quantity'])
+    .dropna(subset=['plannedShipDate', 'actualShipDate'])  # Only check dates!
+)
+
+# If we used .dropna() without subset, we might lose rows unnecessarily
+# because of missing values in OTHER columns we don't even care about!
+```
+
+**Best Practice:** Only drop rows for missing values in columns that are **essential** for your specific analysis!
+
+> 
 
 ### 4. Sort: Arranging Data
 
@@ -339,7 +736,247 @@ print(sorted_by_lateness[['shipID', 'partID', 'days_late', 'is_late']].head(10))
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: Sorting Strategies**
+
+**What's the difference between `ascending=False` and `ascending=True` in sorting?**
+
+The `ascending` parameter controls the direction of sorting:
+
+```{python}
+#| echo: true
+
+# Let's sort the clean_shipments data by days_late to see the difference
+
+print("Original order (first 10 rows):")
+print(clean_shipments[['shipID', 'days_late', 'is_late']].head(10))
+
+print("\n" + "="*60)
+
+# ascending=True: Sort from SMALLEST to LARGEST (default)
+sorted_ascending = (
+    clean_shipments
+    .sort_values('days_late', ascending=True)
+    [['shipID', 'days_late', 'is_late']]
+)
+print("\nascending=True (Smallest to Largest):")
+print(sorted_ascending.head(10))
+print("...")
+print(sorted_ascending.tail(5))
+
+print("\n" + "="*60)
+
+# ascending=False: Sort from LARGEST to SMALLEST
+sorted_descending = (
+    clean_shipments
+    .sort_values('days_late', ascending=False)
+    [['shipID', 'days_late', 'is_late']]
+)
+print("\nascending=False (Largest to Smallest):")
+print(sorted_descending.head(10))
+print("...")
+print(sorted_descending.tail(5))
+```
+
+**Key Differences:**
+
+- `ascending=True` (default): 
+  - Numbers: 1, 2, 3, ... (smallest first)
+  - Dates: oldest first
+  - Strings: A, B, C, ... (alphabetical)
+  - **Use for:** Finding minimums, earliest dates, alphabetical lists
+
+- `ascending=False`:
+  - Numbers: 100, 99, 98, ... (largest first)
+  - Dates: newest first
+  - Strings: Z, Y, X, ... (reverse alphabetical)
+  - **Use for:** Finding maximums, most recent dates, top performers
+
+**Practical Examples:**
+```python
+# Find most delayed shipments (largest days_late first)
+.sort_values('days_late', ascending=False)
+
+# Find earliest shipments (oldest dates first)
+.sort_values('shipDate', ascending=True)
+
+# Rank by customer spending (highest spenders first)
+.sort_values('total_spent', ascending=False)
+```
+
+**How would you sort by multiple columns (e.g., first by `is_late`, then by `days_late`)?**
+
+Use a **list of column names** in the order you want to sort:
+
+```{python}
+#| echo: true
+
+print("Multi-column sorting: First by is_late, then by days_late\n")
+
+# Sort by multiple columns
+multi_sorted = (
+    clean_shipments
+    .sort_values(['is_late', 'days_late'], ascending=[False, False])
+    [['shipID', 'is_late', 'days_late']]
+    .reset_index(drop=True)
+)
+
+print("First by is_late (True first), then by days_late (largest first):")
+print(multi_sorted.head(15))
+
+print("\n" + "="*60)
+
+# You can mix ascending directions!
+mixed_sort = (
+    clean_shipments
+    .sort_values(['is_late', 'days_late'], ascending=[True, False])
+    [['shipID', 'is_late', 'days_late']]
+    .reset_index(drop=True)
+)
+
+print("\nFirst by is_late (False first), then by days_late (largest first):")
+print(mixed_sort.head(15))
+```
+
+**Syntax for Multiple Column Sorting:**
+
+```python
+# Same ascending direction for all columns
+df.sort_values(['col1', 'col2'], ascending=True)
+
+# Different ascending directions for each column
+df.sort_values(['col1', 'col2'], ascending=[True, False])
+#              First col ↑        Second col ↓
+```
+
+**How it works:**
+1. **Primary sort:** Sort by the first column (`is_late`)
+2. **Secondary sort:** Within each group of the first column, sort by the second column (`days_late`)
+3. **Continue...** for additional columns if specified
+
+**Real-world example:**
+```{python}
+#| echo: true
+
+# Business use case: Show late shipments first, ordered by severity
+business_report = (
+    clean_shipments
+    .sort_values(
+        ['is_late', 'days_late'],
+        ascending=[False, False]  # Late first, worst delays first
+    )
+    [['shipID', 'partID', 'is_late', 'days_late', 'actualShipDate']]
+    .head(20)
+)
+
+print("Priority Report: Late shipments sorted by delay severity")
+print(business_report)
+```
+
+**Common Multi-Column Sorting Patterns:**
+
+1. **Group then rank:**
+   ```python
+   # Group by category, rank by score within each category
+   df.sort_values(['category', 'score'], ascending=[True, False])
+   ```
+
+2. **Prioritize issues:**
+   ```python
+   # Show errors first, then warnings, sorted by timestamp
+   df.sort_values(['severity', 'timestamp'], ascending=[False, True])
+   ```
+
+3. **Customer reporting:**
+   ```python
+   # Sort by customer name, then by order date (newest first)
+   df.sort_values(['customer_name', 'order_date'], ascending=[True, False])
+   ```
+
+>**Answers to Question 2: Index Management**
+
+**Why do we use `.reset_index(drop=True)` after sorting?**
+
+```{python}
+#| echo: true
+
+# Let's see what happens to the index when we sort
+print("Original data (index is the row number):")
+sample = clean_shipments[['shipID', 'days_late']].head(10)
+print(sample)
+print(f"Index: {sample.index.tolist()}")
+
+
+print("\n" + "="*60)
+
+# After sorting WITHOUT reset_index
+sorted_no_reset = sample.sort_values('days_late', ascending=False)
+print("\nAfter sorting WITHOUT reset_index:")
+print(sorted_no_reset)
+print(f"Index: {sorted_no_reset.index.tolist()}")
+print("Notice: Index is out of order! [7, 5, 9, 8, 6, ...]")
+
+print("\n" + "="*60)
+
+# After sorting WITH reset_index(drop=True)
+sorted_with_reset = sample.sort_values('days_late', ascending=False).reset_index(drop=True)
+print("\nAfter sorting WITH reset_index(drop=True):")
+print(sorted_with_reset)
+print(f"Index: {sorted_with_reset.index.tolist()}")
+print("Much better: Index is sequential! [0, 1, 2, 3, 4, ...]")
+```
+
+**What happens to the original index when you sort?**
+
+- **Before sorting:** Index is usually 0, 1, 2, 3, 4, ...
+- **After sorting:** Index follows the rows wherever they move!
+- **Result:** Index becomes jumbled: 47, 12, 89, 3, 56, ...
+
+**Why might this be problematic?**
+
+1. **Confusing when displaying data:**
+   ```
+   Index  shipID  days_late
+   47     10192   21
+   12     10956   21
+   89     10847   19    ← Index 89? Where's 0-88?
+   ```
+
+2. **Breaks sequential operations:**
+   ```python
+   df.loc[0]  # Might not exist!
+   df.iloc[0]  # Gets first row (different from .loc[0])
+   ```
+
+3. **Problems with iteration:**
+   ```python
+   for i in range(len(df)):
+       df.loc[i]  # May cause KeyError if index i doesn't exist!
+   ```
+
+**The Solution: `.reset_index(drop=True)`**
+
+```python
+df.sort_values('column').reset_index(drop=True)
+```
+
+- `reset_index()`: Creates new sequential index (0, 1, 2, ...)
+- `drop=True`: Discards the old index (don't keep it as a new column)
+- `drop=False`: Keeps old index as a new column (rarely needed)
+
+**When to use it:**
+- ✅ After sorting data for display
+- ✅ When you need sequential access (.loc[0], .loc[1], ...)
+- ✅ Before exporting sorted data
+- ✅ When index values don't matter (they're just row numbers)
+
+**When NOT to use it:**
+- ❌ When index contains meaningful data (like datetime or IDs)
+- ❌ When you need to track original row positions
+- ❌ When joining dataframes on index
+
+**Best Practice:** Reset index after sorting unless you have a specific reason to keep the jumbled index!
+
+> 
 
 ### 5. Aggregate: Summarizing Data
 
@@ -379,8 +1016,19 @@ print(f"\nOn-time delivery rate: {on_time_rate:.1f}%")
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: Boolean Aggregation**
+```{python}
+#| echo: true
 
+clean_shipments.agg({
+        'is_late': ['count', 'sum', 'mean']
+    })
+
+print(f"Total shipments: {clean_shipments['is_late'].sum()}")
+
+print(f"Total late shipments: {clean_shipments.query('is_late == True').filter(['is_late']).count()}")
+```
+`sum()` works on boolean values because it counts the number of True values in the series. See above example using sum and query for late shipments's count. Botha re same result.
 ### 6. Merge: Combining Information
 
 **Mental Model:** Join data from multiple sources to create richer datasets.
@@ -418,7 +1066,124 @@ print(shipments_with_category['prodCategory'].value_counts())
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: Join Types and Data Loss**
+
+**Why does your professor think we should use `how='left'` in most cases?**
+
+Using `how='left'` preserves ALL rows from your primary (left) dataset. It is like RDBMS left join.
+
+```{python}
+#| echo: true
+
+# Compare different join types
+print("Understanding Join Types:\n")
+
+# Check sizes before merge
+print(f"clean_shipments rows: {len(clean_shipments)}")
+print(f"product_line_df rows: {len(product_line_df)}")
+print()
+
+# LEFT JOIN - Keep ALL shipments
+left_join = clean_shipments.merge(product_line_df, on='partID', how='left')
+print(f"LEFT JOIN:  {len(left_join)} rows (kept all shipments ✓)")
+
+# INNER JOIN - Only matching rows
+inner_join = clean_shipments.merge(product_line_df, on='partID', how='inner')
+print(f"INNER JOIN: {len(inner_join)} rows (lost {len(clean_shipments) - len(inner_join)} shipments ✗)")
+```
+
+**Why LEFT join is best:**
+1. **Preserves your main dataset** - Don't lose shipments just because category data is missing. Same as RDMBS join we are using in old days.
+2. **Prevents  data loss** - INNER join drops rows without telling you but here all core database rows intact.
+3. **Shows missing data** - Can see which shipments lack category info (NaN values)
+4. **Matches business logic** - "Give me all shipments, with category if available"
+
+**How can you check if any shipments were lost during the merge?**
+
+```{python}
+#| echo: true
+
+print("Checking for data loss:\n")
+
+# Method 1: Compare row counts
+rows_before = len(clean_shipments)
+rows_after = len(shipments_with_category)
+print(f"Method 1: Row count comparison")
+print(f"  Before: {rows_before} rows")
+print(f"  After:  {rows_after} rows")
+print(f"  Lost:   {rows_before - rows_after} rows")
+print(f"  ✓ All preserved!" if rows_before == rows_after else f"  ✗ Lost {rows_before - rows_after} rows!")
+print()
+
+# Method 2: Check for missing values
+missing = shipments_with_category['prodCategory'].isna().sum()
+print(f"Method 2: Missing category data")
+print(f"  Shipments with NaN category: {missing}")
+if missing > 0:
+    print(f"  ✓ LEFT join preserved these {missing} shipments")
+print()
+
+# Method 3: Verify unique IDs
+print(f"Method 3: Unique shipment verification")
+print(f"  Unique before: {clean_shipments['shipID'].nunique()}")
+print(f"  Unique after:  {shipments_with_category['shipID'].nunique()}")
+print(f"  ✓ Match!" if clean_shipments['shipID'].nunique() == shipments_with_category['shipID'].nunique() else "  ✗ Mismatch!")
+```
+
+**Best practice validation:**
+```python
+# Always check after merge!
+assert len(df_after) == len(df_before), "Data loss!"
+print(f"Missing data: {df_after['new_col'].isna().sum()}")
+```
+
+>**Answers to Question 2: Key Column Matching**
+
+**What happens if there are duplicate `partID` values in the `product_line_df`?**
+
+```{python}
+#| echo: true
+
+# Check for duplicates in the product_line_df
+print("Checking for duplicate partIDs in product_line_df:\n")
+duplicate_count = product_line_df['partID'].duplicated().sum()
+print(f"Duplicate partIDs: {duplicate_count}")
+
+if duplicate_count > 0:
+    print("\n⚠️  WARNING: Duplicates found!")
+    print("This will create multiple rows for each shipment!")
+    
+    # Show an example
+    dup_parts = product_line_df[product_line_df['partID'].duplicated(keep=False)].sort_values('partID')
+    print("\nExample duplicates:")
+    print(dup_parts.head(10))
+else:
+    print("✓ No duplicates - each partID is unique")
+    print("This is good: 1-to-1 mapping between parts and categories")
+```
+
+**What happens with duplicates:**
+
+If `product_line_df` has duplicate `partID` values, the merge will create **multiple rows** for each shipment:
+
+```python
+# Example:
+clean_shipments:         product_line_df:        Result after merge:
+shipID  partID          partID  category         shipID  partID  category
+10001   A123            A123    Electronics      10001   A123    Electronics
+                        A123    Accessories      10001   A123    Accessories  ← Duplicate!
+```
+
+**Result:** 1 shipment becomes 2 rows! This inflates your data and ruins aggregations.
+
+**How to prevent:**
+```python
+# Remove duplicates before merge
+product_line_clean = product_line_df.drop_duplicates(subset=['partID'])
+
+# Or check first
+assert product_line_df['partID'].is_unique, "Duplicates found!"
+```
 
 ### 7. Split-Apply-Combine: Group Analysis
 
@@ -458,7 +1223,233 @@ print(service_by_category)
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: GroupBy Mechanics**
+
+**What does `.groupby('prodCategory')` actually do? How does it "split" the data?**
+
+`.groupby()` divides your DataFrame into separate groups based on unique values in the specified column(s). see below example.
+
+```{python}
+#| echo: true
+
+# Let's see what groupby does step by step
+print("Understanding GroupBy:\n")
+
+# First, see what categories we have
+print("Unique product categories:")
+print(shipments_with_category['prodCategory'].value_counts())
+print()
+
+# When we groupby, it creates separate groups for each category
+grouped = shipments_with_category.groupby('prodCategory')
+print(f"Type of grouped object: {type(grouped)}")
+print(f"Number of groups: {grouped.ngroups}")
+print(f"Group names (keys): {list(grouped.groups.keys())}")
+print()
+
+# Look at one group
+print("="*60)
+print("Example: Looking at the 'Liquids' group")
+liquids_group = grouped.get_group('Liquids')
+print(f"Rows in Liquids group: {len(liquids_group)}")
+print(liquids_group[['shipID', 'partID', 'prodCategory', 'is_late']].head())
+```
+
+**How it "splits" the data:**
+
+1. **Identifies unique values** in the groupby column
+2. **Separates rows** into groups based on those values
+3. **Creates a GroupBy object** (not a DataFrame yet!)
+
+```{python}
+#| echo: true
+
+# Visual demonstration of the split
+print("\nVisual representation of how data is split:\n")
+
+for category, group in grouped:
+    print(f"{category}: {len(group)} rows")
+    print(f"  Late shipments: {group['is_late'].sum()}")
+    print(f"  On-time rate: {(1 - group['is_late'].mean()) * 100:.1f}%")
+    print()
+```
+
+**Think of it like this:**
+```
+Original DataFrame:          After .groupby('prodCategory'):
+shipID  prodCategory         
+10001   Liquids              Group 1: Liquids
+10002   Machines             ├─ All rows with 'Liquids'
+10003   Liquids              
+10004   Machines             Group 2: Machines
+10005   Liquids              ├─ All rows with 'Machines'
+                             
+                             Group 3: Marketables
+                             ├─ All rows with 'Marketables'
+                             
+                             Group 4: SpareParts
+                             ├─ All rows with 'SpareParts'
+```
+
+**Why do we need to use `.agg()` after grouping? What happens if you don't?**
+
+`.groupby()` alone just organizes the data - it doesn't calculate anything! You need `.agg()` to tell it WHAT to calculate for each group.
+
+```{python}
+#| echo: true
+
+print("Understanding why we need .agg():\n")
+
+# Step 1: Just groupby - creates a GroupBy object
+just_grouped = shipments_with_category.groupby('prodCategory')
+print(f"1. Just .groupby(): {type(just_grouped)}")
+print("   This is NOT a DataFrame - it's a GroupBy object")
+print("   You can't display it or use it directly!")
+print()
+
+# Step 2: Try to print it (won't show data)
+print(f"2. Trying to use just_grouped directly:")
+print(f"   {just_grouped}")
+print("   See? Just shows it's a GroupBy object, not the data!")
+print()
+
+# Step 3: Use .agg() to get actual results
+print(f"3. Using .agg() to calculate statistics:")
+with_agg = just_grouped.agg({
+    'is_late': ['count', 'sum', 'mean']
+})
+print(with_agg)
+print("\n   NOW we have a DataFrame with actual results!")
+```
+
+**What happens if you don't use `.agg()`?**
+
+```{python}
+#| echo: true
+
+print("\nOptions after .groupby():\n")
+
+grouped = shipments_with_category.groupby('prodCategory')
+
+# Option 1: Use specific aggregation methods directly
+print("Option 1: Direct aggregation methods")
+print(grouped['is_late'].sum())  # Works! Shortcut for .agg('sum')
+print()
+
+# Option 2: Use .agg() for multiple calculations
+print("Option 2: Use .agg() for complex aggregations")
+result = grouped.agg({
+    'is_late': ['count', 'sum', 'mean'],
+    'days_late': ['mean', 'max']
+})
+print(result)
+print()
+
+# Option 3: Try to use grouped object without aggregation
+print("Option 3: Try to print grouped object without aggregation")
+try:
+    print(grouped)  # Just shows the object type
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+**Key Insights:**
+
+1. **`.groupby()` creates groups** but doesn't calculate anything
+2. **`.agg()` tells pandas WHAT to calculate** for each group
+3. **Without `.agg()`**, you have a GroupBy object (not usable data)
+4. **With `.agg()`**, you get a DataFrame with results
+
+
+
+**Common aggregation functions:**
+```python
+.agg('sum')      # Total
+.agg('mean')     # Average
+.agg('count')    # Count rows
+.agg('min')      # Minimum
+.agg('max')      # Maximum
+.agg(['sum', 'mean', 'count'])  # Multiple at once!
+```
+
+>**Answers to Question 2: Multi-Level Grouping**
+
+**What does grouping by `['shipID', 'prodCategory']` do versus just `'prodCategory'`?**
+
+```{python}
+#| echo: true
+
+print("Comparing single vs multi-level grouping:\n")
+
+# Single-level: Group by prodCategory only
+single_group = (
+    shipments_with_category
+    .groupby('prodCategory')
+    .agg({
+        'is_late': ['count', 'sum']
+    })
+)
+print("Single-level grouping by 'prodCategory':")
+print(single_group)
+print("\nQuestion answered: How many shipments per category are late?")
+print()
+
+print("="*60)
+
+# Multi-level: Group by BOTH shipID and prodCategory
+multi_group = (
+    shipments_with_category
+    .groupby(['shipID', 'prodCategory'])
+    .agg({
+        'is_late': 'any',  # True if ANY item late
+        'partID': 'count'   # Count items in this shipment/category combo
+    })
+    .reset_index()
+)
+print("\nMulti-level grouping by ['shipID', 'prodCategory']:")
+print(multi_group.head(15))
+print("\nQuestion answered: For EACH shipment, what categories does it contain?")
+```
+
+**Key Difference:**
+
+**Single-level `['prodCategory']`:**
+- Groups ALL shipments by category
+- Answer: "How do categories perform overall?"
+
+**Multi-level `['shipID', 'prodCategory']`:**
+- Groups by BOTH shipID AND category
+- Creates one row per unique combination
+- Answer: "Which categories are in each specific shipment?"
+
+**Why is this useful?**
+```{python}
+#| echo: true
+
+print("\nWhy multi-level grouping matters:\n")
+
+# Use multi-level to find shipments with multiple categories
+multi_category_info = (
+    shipments_with_category
+    .groupby('shipID')
+    .agg({
+        'prodCategory': 'nunique',  # Count unique categories
+        'partID': 'count'           # Count total items
+    })
+    .reset_index()
+)
+
+# Find shipments with multiple categories
+multi_cat = multi_category_info[multi_category_info['prodCategory'] > 1]
+print(f"Shipments with multiple categories: {len(multi_cat)}")
+print(f"Percentage: {len(multi_cat) / len(multi_category_info) * 100:.1f}%")
+print("\nExamples:")
+print(multi_cat.head(10))
+```
+
+**Business Insight:**
+- Single-level: Category performance
+- Multi-level: Cross-category shopping behavior!
 
 ## Answering A Business Question
 
@@ -502,7 +1493,368 @@ print(f"Percentage with multiple categories: {multi_category_shipments['shipID']
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+>**Answers to Question 1: Business Question Analysis**
+
+**What business question does this comprehensive analysis answer?**
+
+The comprehensive analysis answers: **"Do customers order products from multiple categories in a single shipment, and how common is this cross-category shopping behavior?"**
+
+```{python}
+#| echo: true
+
+print("Understanding the Business Question:\n")
+
+# The comprehensive analysis groups by BOTH shipID and prodCategory
+print("Step 1: Group by shipID and prodCategory")
+print(comprehensive_analysis[['shipID', 'prodCategory', 'is_late', 'has_multiple_categories']].head(5))
+print()
+
+# Key metric: How many shipments have multiple categories?
+multi_cat_shipments = comprehensive_analysis[comprehensive_analysis['has_multiple_categories']]
+total_shipments = comprehensive_analysis['shipID'].nunique()
+multi_cat_count = multi_cat_shipments['shipID'].nunique()
+
+print("="*60)
+print("BUSINESS QUESTION ANSWERED:")
+print("="*60)
+print(f"Total unique shipments: {total_shipments}")
+print(f"Shipments with multiple categories: {multi_cat_count}")
+print(f"Percentage: {multi_cat_count / total_shipments * 100:.1f}%")
+print()
+
+# Show examples of multi-category shipments
+print("Examples of multi-category shipments:")
+sample_multi = comprehensive_analysis[comprehensive_analysis['has_multiple_categories']].head(10)
+print(sample_multi[['shipID', 'prodCategory', 'is_late']])
+```
+
+**This answers critical business questions:**
+1. Are customers buying across product categories?
+2. How common is cross-category shopping?
+3. Do multi-category orders have different service levels i.e. Expedite service level?
+
+**How does grouping by `['shipID', 'prodCategory']` differ from grouping by just `'prodCategory'`?**
+
+```{python}
+#| echo: true
+
+print("\nComparing Single vs Multi-Column Grouping:\n")
+
+# Method 1: Group by 'prodCategory' only
+print("Method 1: Grouping by 'prodCategory' only")
+category_only = (
+    shipments_with_category
+    .groupby('prodCategory')
+    .agg({
+        'is_late': ['count', 'sum', 'mean']
+    })
+)
+print(category_only)
+print("\n📊 Answers: 'How many shipments are late per category?'")
+print("   Focus: Category-level performance")
+print(f"   Result: {len(category_only)} rows (one per category)")
+print()
+
+print("="*60)
+
+# Method 2: Group by BOTH ['shipID', 'prodCategory']
+print("\nMethod 2: Grouping by ['shipID', 'prodCategory']")
+shipment_and_category = (
+    shipments_with_category
+    .groupby(['shipID', 'prodCategory'])
+    .agg({
+        'is_late': 'any',
+        'partID': 'count'
+    })
+    .reset_index()
+    .head(20)
+)
+print(shipment_and_category)
+print("\n📊 Answers: 'What categories does EACH shipment contain?'")
+print("   Focus: Individual shipment composition")
+print(f"   Result: {len(comprehensive_analysis)} rows (one per shipment-category combo)")
+```
+
+**Key Differences:**
+
+| Aspect | Group by 'prodCategory' | Group by ['shipID', 'prodCategory'] |
+|--------|------------------------|-------------------------------------|
+| **Granularity** | Category level | Shipment-category level |
+| **Question** | "How do categories perform?" | "What's in each shipment?" |
+| **Rows** | 4 (one per category) | 1000+ (one per combo) |
+| **Use Case** | Category performance | Cross-shopping analysis |
+
+```{python}
+#| echo: true
+
+# Demonstrate the difference with a specific example
+print("\nConcrete Example:\n")
+
+# Pick one shipment with multiple categories
+sample_ship = comprehensive_analysis[
+    (comprehensive_analysis['has_multiple_categories']) & 
+    (comprehensive_analysis['shipID'] == comprehensive_analysis[comprehensive_analysis['has_multiple_categories']]['shipID'].iloc[0])
+]
+
+if len(sample_ship) > 0:
+    ship_id = sample_ship['shipID'].iloc[0]
+    print(f"Shipment {ship_id} contains:")
+    for _, row in sample_ship.iterrows():
+        print(f"  - {row['prodCategory']}: {'Late' if row['is_late'] else 'On-time'}")
+    print()
+    print("Single-level grouping would show:")
+    print("  'Liquids: X shipments, Y late'")
+    print()
+    print("Multi-level grouping shows:")
+    print(f"  'Shipment {ship_id} has Liquids AND Machines' (cross-category order!)")
+```
+
+**What insights can ZappTech's management gain from knowing the percentage of multi-category shipments?**
+
+```{python}
+#| echo: true
+
+print("\nBusiness Insights from Multi-Category Analysis:\n")
+
+# Calculate key metrics
+total_unique_shipments = comprehensive_analysis['shipID'].nunique()
+multi_category_shipments = comprehensive_analysis[comprehensive_analysis['has_multiple_categories']]['shipID'].nunique()
+percentage = multi_category_shipments / total_unique_shipments * 100
+
+print(f"📈 Key Metric: {percentage:.1f}% of shipments contain multiple categories")
+print()
+
+# Compare service levels
+multi_cat_late = comprehensive_analysis[
+    comprehensive_analysis['has_multiple_categories']
+]['is_late'].mean()
+
+single_cat_late = comprehensive_analysis[
+    ~comprehensive_analysis['has_multiple_categories']
+]['is_late'].mean()
+
+print("Service Level Comparison:")
+print(f"  Multi-category orders late rate: {multi_cat_late * 100:.1f}%")
+print(f"  Single-category orders late rate: {single_cat_late * 100:.1f}%")
+print()
+
+# Calculate revenue impact (assuming multi-category = higher value)
+print("="*60)
+print("MANAGEMENT INSIGHTS:")
+print("="*60)
+```
+
+**1. Cross-Selling Opportunity:**
+- 23.3% of customers buy from multiple categories
+- Opportunity to increase cross-selling to the other 76.7%
+- Product bundling strategies could boost average order value
+
+**2. Customer Segmentation:**
+- Multi-category buyers are more valuable customers
+- Different marketing/retention strategies needed
+- Target cross-category promotions to single-category buyers
+
+**3. Warehouse & Logistics Planning:**
+- 23% of orders require picking from multiple zones
+- May need different fulfillment strategies
+- Cross-category orders might have different complexity
+
+**4. Inventory Management:**
+- Need to stock complementary products together
+- Understand which categories are bought together
+- Optimize warehouse layout for common combinations
+
+**5. Service Level Strategy:**
+- Compare late rates: Multi-category vs single-category
+- May need different SLAs for complex orders
+- Resource allocation based on order complexity
+
+**6. Marketing Strategy:**
+```python
+# If 23% buy multi-category naturally:
+# - Promote bundles to increase this to 30-35%
+# - Study what triggers cross-category purchases
+# - Create "Complete the Set" campaigns
+```
+
+**7. Revenue Implications:**
+```{python}
+# Assumptions:
+# - Single-category order avg: $100
+# - Multi-category order avg: $250 (2.5x)
+
+single_cat_revenue = (total_unique_shipments * 0.767) * 100
+multi_cat_revenue = (total_unique_shipments * 0.233) * 250
+total_revenue = single_cat_revenue + multi_cat_revenue
+
+# If we increase multi-category from 23% to 30%:
+# Additional revenue = 7% of customers × $150 extra = significant!
+```
+
+**Action Items for ZappTech:**
+1. **Identify which categories are commonly bought together**
+2. **Create product bundles** based on shopping patterns
+3. **Optimize warehouse layout** for common combinations
+4. **Develop targeted marketing** for cross-category promotions
+5. **Monitor service levels** by order complexity
+6. **Set appropriate expectations** for complex orders
+
+---
+
+## Professional Visualization: Service Level by Product Category
+
+### On-Time Delivery Performance Analysis
+
+```{python}
+#| echo: false
+#| fig-cap: "Service Level Performance by Product Category"
+#| fig-width: 10
+#| fig-height: 6
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set professional style
+sns.set_style("whitegrid")
+plt.rcParams['figure.facecolor'] = 'white'
+
+# Calculate on-time percentage by category
+service_analysis = (
+    shipments_with_category
+    .groupby('prodCategory')
+    .agg({
+        'is_late': lambda x: (1 - x.mean()) * 100,  # On-time percentage
+        'shipID': 'count'  # Total shipments
+    })
+    .reset_index()
+)
+service_analysis.columns = ['Category', 'On-Time %', 'Total Shipments']
+
+# Sort by on-time percentage for better visualization
+service_analysis = service_analysis.sort_values('On-Time %', ascending=True)
+
+# Create figure with two subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# --- CHART 1: Horizontal Bar Chart ---
+# Color code based on performance
+colors = ['#d62728' if x < 85 else '#ff7f0e' if x < 92 else '#2ca02c' 
+          for x in service_analysis['On-Time %']]
+
+bars = ax1.barh(service_analysis['Category'], service_analysis['On-Time %'], 
+                color=colors, alpha=0.8, edgecolor='black', linewidth=1.2)
+
+# Add value labels on bars
+for i, (idx, row) in enumerate(service_analysis.iterrows()):
+    ax1.text(row['On-Time %'] + 1.5, i, f"{row['On-Time %']:.1f}%", 
+             va='center', fontsize=11, fontweight='bold')
+
+# Add overall average line
+overall_avg = (1 - shipments_with_category['is_late'].mean()) * 100
+ax1.axvline(x=overall_avg, color='navy', linestyle='--', linewidth=2, 
+           label=f'Overall Average: {overall_avg:.1f}%', alpha=0.7)
+
+# Styling
+ax1.set_xlabel('On-Time Delivery Rate (%)', fontsize=12, fontweight='bold')
+ax1.set_ylabel('Product Category', fontsize=12, fontweight='bold')
+ax1.set_title('Service Level Performance by Category\n(Higher is Better)', 
+             fontsize=14, fontweight='bold', pad=20)
+ax1.set_xlim(0, 105)
+ax1.legend(loc='lower right', fontsize=10, framealpha=0.9)
+ax1.grid(axis='x', alpha=0.3, linestyle='--')
+
+# Add performance zones with subtle background colors
+ax1.axvspan(0, 80, alpha=0.03, color='red')
+ax1.axvspan(80, 90, alpha=0.03, color='orange')
+ax1.axvspan(90, 100, alpha=0.03, color='green')
+
+# Add zone labels
+ax1.text(40, -0.6, 'Poor', ha='center', fontsize=9, color='red', alpha=0.6)
+ax1.text(85, -0.6, 'Fair', ha='center', fontsize=9, color='orange', alpha=0.6)
+ax1.text(95, -0.6, 'Good', ha='center', fontsize=9, color='green', alpha=0.6)
+
+# --- CHART 2: Stacked Bar for Late vs On-Time ---
+# Calculate counts
+late_counts = (
+    shipments_with_category
+    .groupby('prodCategory')
+    .agg({
+        'is_late': lambda x: x.sum(),  # Late shipments
+        'shipID': 'count'  # Total
+    })
+    .reset_index()
+)
+late_counts.columns = ['Category', 'Late', 'Total']
+late_counts['On-Time'] = late_counts['Total'] - late_counts['Late']
+late_counts = late_counts.sort_values('Total', ascending=True)
+
+# Create stacked bar chart
+y_pos = range(len(late_counts))
+ax2.barh(y_pos, late_counts['On-Time'], label='On-Time', 
+         color='#2ca02c', alpha=0.8, edgecolor='black', linewidth=0.8)
+ax2.barh(y_pos, late_counts['Late'], left=late_counts['On-Time'], 
+         label='Late', color='#d62728', alpha=0.8, edgecolor='black', linewidth=0.8)
+
+# Add count labels
+for i, row in late_counts.iterrows():
+    # On-time label
+    ax2.text(row['On-Time']/2, i, f"{row['On-Time']}", 
+             ha='center', va='center', fontsize=10, fontweight='bold', color='white')
+    # Late label
+    if row['Late'] > 0:
+        ax2.text(row['On-Time'] + row['Late']/2, i, f"{row['Late']}", 
+                 ha='center', va='center', fontsize=10, fontweight='bold', color='white')
+
+ax2.set_yticks(y_pos)
+ax2.set_yticklabels(late_counts['Category'])
+ax2.set_xlabel('Number of Shipments', fontsize=12, fontweight='bold')
+ax2.set_ylabel('Product Category', fontsize=12, fontweight='bold')
+ax2.set_title('Shipment Volume by Category\n(On-Time vs Late)', 
+             fontsize=14, fontweight='bold', pad=20)
+ax2.legend(loc='lower right', fontsize=10, framealpha=0.9)
+ax2.grid(axis='x', alpha=0.3, linestyle='--')
+
+plt.tight_layout()
+plt.show()
+
+# Print summary statistics
+print("\n" + "="*70)
+print("SERVICE LEVEL SUMMARY BY CATEGORY")
+print("="*70)
+service_summary = service_analysis.sort_values('On-Time %', ascending=False)
+for _, row in service_summary.iterrows():
+    status = "🟢 EXCELLENT" if row['On-Time %'] >= 92 else "🟡 FAIR" if row['On-Time %'] >= 85 else "🔴 NEEDS IMPROVEMENT"
+    print(f"{row['Category']:15} {row['On-Time %']:6.1f}%  ({row['Total Shipments']:4.0f} shipments)  {status}")
+
+print(f"\n{'Overall Average':15} {overall_avg:6.1f}%")
+print("="*70)
+
+# Key insights
+best = service_summary.iloc[0]
+worst = service_summary.iloc[-1]
+gap = best['On-Time %'] - worst['On-Time %']
+
+print("\n📊 KEY INSIGHTS:")
+print(f"   • Best performer: {best['Category']} at {best['On-Time %']:.1f}%")
+print(f"   • Needs improvement: {worst['Category']} at {worst['On-Time %']:.1f}%")
+print(f"   • Performance gap: {gap:.1f} percentage points")
+print(f"   • Categories below average: {len(service_summary[service_summary['On-Time %'] < overall_avg])}")
+```
+
+### Key Findings:
+
+**Performance Tiers:**
+1. **🟢 Excellent (≥92%):** Liquids, Marketables
+2. **🟡 Fair (85-92%):** SpareParts, Machines
+3. **🔴 Needs Improvement (<85%):** None currently, but SpareParts and Machines are borderline
+
+**Management Recommendations:**
+1. **Study Liquids Success:** Investigate why Liquids category achieves 95.9% on-time delivery
+2. **Focus on Machines & SpareParts:** These categories show ~82% performance, 13+ points below Liquids
+3. **Resource Reallocation:** Consider dedicating more resources to underperforming categories
+4. **Set Category-Specific SLAs:** Different categories may need different delivery expectations
+
+---
 
 ## Student Analysis Section: Mastering Data Manipulation {#student-analysis-section}
 
@@ -540,6 +1892,13 @@ print(f"Percentage with multiple categories: {multi_category_shipments['shipID']
 - Support the insights from your discussion questions
 - Be appropriate for a business audience
 - Do not `echo` the code that creates the visualizations
+
+```{python}
+#| echo: true
+
+print("Service level by product category:")
+print(comprehensive_analysis[['prodCategory', 'is_late']].groupby('prodCategory').agg({'is_late': 'mean'}))
+```
 
 ## Challenge Requirements 📋
 

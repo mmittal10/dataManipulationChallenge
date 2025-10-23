@@ -375,7 +375,7 @@ First few rows of product line data:
 <blockquote class="blockquote">
 <p>Answers to Question 1:</p>
 </blockquote>
-<div id="3e6fd387" class="cell" data-message="false" data-execution_count="3">
+<div id="95437b95" class="cell" data-message="false" data-execution_count="3">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Data type of actualShipDate:"</span>, shipments_df[<span class="st">'actualShipDate'</span>].dtype)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Data type of actualShipDate: datetime64[ns]</code></pre>
@@ -391,7 +391,7 @@ First few rows of product line data:
 <p>Answers to Question 2:</p>
 </blockquote>
 <p>String comparison vs.&nbsp;Date comparison example:</p>
-<div id="912a28b6" class="cell" data-message="false" data-execution_count="4">
+<div id="c6bb2cf1" class="cell" data-message="false" data-execution_count="4">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: Comparing "04-11-2025" and "05-20-2024"</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># STRING COMPARISON (alphabetical/lexicographic)</span></span>
@@ -463,7 +463,7 @@ Time difference: 326 days (10 months)</code></pre>
 <blockquote class="blockquote">
 <p>Answers to Question 3:</p>
 </blockquote>
-<div id="6b380c2e" class="cell" data-execution_count="5">
+<div id="2177839c" class="cell" data-execution_count="5">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Here is the fixed error code:</span></span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>shipments_with_lateness_corrected <span class="op">=</span> (</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    shipments_df</span>
@@ -568,7 +568,7 @@ Late shipments sample:
 <blockquote class="blockquote">
 <p>What’s the difference between <code>.query('is_late == True')</code> and <code>[df['is_late'] == True]</code>?** Both methods filter rows, but they work differently:</p>
 </blockquote>
-<div id="ee5aa148" class="cell" data-execution_count="7">
+<div id="541a2a70" class="cell" data-execution_count="7">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 1: Using .query() - SQL-like string syntax</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Method 1: Using .query()"</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>late_with_query <span class="op">=</span> (</span>
@@ -644,7 +644,7 @@ Results are identical: True</code></pre>
 <p><strong>Answers to Question 2: Using Variables in Queries</strong></p>
 </blockquote>
 <p><strong>Example: Query rows for shipments that are at least 5 days late</strong></p>
-<div id="828b1ebc" class="cell" data-execution_count="8">
+<div id="215ccee4" class="cell" data-execution_count="8">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the threshold</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>late_threshold <span class="op">=</span> <span class="dv">5</span></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -757,7 +757,7 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
 </blockquote>
 <p><strong>What’s the difference between <code>.drop(columns=['quantity'])</code> and <code>.filter()</code> with a list of columns you want to keep?</strong></p>
 <p>These methods are opposites - one removes columns, the other keeps them:</p>
-<div id="cac0fb09" class="cell" data-execution_count="10">
+<div id="6b55a84a" class="cell" data-execution_count="10">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's see what columns we have in our clean_shipments dataset</span></span>
 <span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>shipments_with_lateness.columns.tolist()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display" data-execution_count="10">
@@ -770,7 +770,7 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
  'days_late']</code></pre>
 </div>
 </div>
-<div id="4efe1bf0" class="cell" data-execution_count="11">
+<div id="982c7e03" class="cell" data-execution_count="11">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's see what columns we have in our clean_shipments dataset</span></span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>clean_shipments_columns <span class="op">=</span> shipments_with_lateness.copy()</span>
 <span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original columns:"</span>)</span>
@@ -832,7 +832,7 @@ Total: 4 columns</code></pre>
 <li><code>.filter(['col1', 'col2'])</code> - direct list of column names</li>
 </ul></li>
 </ol>
-<div id="807ea24e" class="cell" data-execution_count="12">
+<div id="b364f404" class="cell" data-execution_count="12">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Example showing they can achieve the same result</span></span>
 <span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Starting with these columns:"</span>, clean_shipments.columns.tolist())</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -863,7 +863,7 @@ Both methods give same result: True</code></pre>
 <p><strong>Answers to Question 2: Handling Missing Data</strong></p>
 </blockquote>
 <p><strong>What happens if you use <code>.dropna()</code> without specifying <code>subset</code>?</strong></p>
-<div id="e263b613" class="cell" data-execution_count="13">
+<div id="bbff83ae" class="cell" data-execution_count="13">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's create a sample dataset with missing values to demonstrate</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1024,7 +1024,7 @@ Difference:
 </blockquote>
 <p><strong>What’s the difference between <code>ascending=False</code> and <code>ascending=True</code> in sorting?</strong></p>
 <p>The <code>ascending</code> parameter controls the direction of sorting:</p>
-<div id="52ec5c0a" class="cell" data-execution_count="15">
+<div id="7ac2bb74" class="cell" data-execution_count="15">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's sort the clean_shipments data by days_late to see the difference</span></span>
 <span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original order (first 10 rows):"</span>)</span>
@@ -1142,7 +1142,7 @@ ascending=False (Largest to Smallest):
 <span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>.sort_values(<span class="st">'total_spent'</span>, ascending<span class="op">=</span><span class="va">False</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>How would you sort by multiple columns (e.g., first by <code>is_late</code>, then by <code>days_late</code>)?</strong></p>
 <p>Use a <strong>list of column names</strong> in the order you want to sort:</p>
-<div id="5ff7b9a9" class="cell" data-execution_count="16">
+<div id="a021ae48" class="cell" data-execution_count="16">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Multi-column sorting: First by is_late, then by days_late</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Sort by multiple columns</span></span>
@@ -1219,7 +1219,7 @@ First by is_late (False first), then by days_late (largest first):
 <span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="co">#              First col ↑        Second col ↓</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>How it works:</strong> 1. <strong>Primary sort:</strong> Sort by the first column (<code>is_late</code>) 2. <strong>Secondary sort:</strong> Within each group of the first column, sort by the second column (<code>days_late</code>) 3. <strong>Continue…</strong> for additional columns if specified</p>
 <p><strong>Real-world example:</strong></p>
-<div id="93ec2c2f" class="cell" data-execution_count="17">
+<div id="6470e65a" class="cell" data-execution_count="17">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Business use case: Show late shipments first, ordered by severity</span></span>
 <span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>business_report <span class="op">=</span> (</span>
 <span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    clean_shipments</span>
@@ -1274,7 +1274,7 @@ First by is_late (False first), then by days_late (largest first):
 <p><strong>Answers to Question 2: Index Management</strong></p>
 </blockquote>
 <p><strong>Why do we use <code>.reset_index(drop=True)</code> after sorting?</strong></p>
-<div id="b7bea373" class="cell" data-execution_count="18">
+<div id="6f3d1d02" class="cell" data-execution_count="18">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's see what happens to the index when we sort</span></span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Original data (index is the row number):"</span>)</span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>sample <span class="op">=</span> clean_shipments[[<span class="st">'shipID'</span>, <span class="st">'days_late'</span>]].head(<span class="dv">10</span>)</span>
@@ -1434,7 +1434,7 @@ On-time delivery rate: 88.6%</code></pre>
 <blockquote class="blockquote">
 <p><strong>Answers to Question 1: Boolean Aggregation</strong></p>
 </blockquote>
-<div id="da028ffa" class="cell" data-execution_count="20">
+<div id="7914e364" class="cell" data-execution_count="20">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>clean_shipments.agg({</span>
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>        <span class="st">'is_late'</span>: [<span class="st">'count'</span>, <span class="st">'sum'</span>, <span class="st">'mean'</span>]</span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>    })</span>
@@ -1496,7 +1496,7 @@ Name: count, dtype: int64</code></pre>
 </blockquote>
 <p><strong>Why does your professor think we should use <code>how='left'</code> in most cases?</strong></p>
 <p>Using <code>how='left'</code> preserves ALL rows from your primary (left) dataset. It is like RDBMS left join.</p>
-<div id="1731d8d5" class="cell" data-execution_count="22">
+<div id="b864eab5" class="cell" data-execution_count="22">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare different join types</span></span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Understanding Join Types:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1524,7 +1524,7 @@ INNER JOIN: 4000 rows (lost 0 shipments ✗)</code></pre>
 </div>
 <p><strong>Why LEFT join is best:</strong> 1. <strong>Preserves your main dataset</strong> - Don’t lose shipments just because category data is missing. Same as RDMBS join we are using in old days. 2. <strong>Prevents data loss</strong> - INNER join drops rows without telling you but here all core database rows intact. 3. <strong>Shows missing data</strong> - Can see which shipments lack category info (NaN values) 4. <strong>Matches business logic</strong> - “Give me all shipments, with category if available”</p>
 <p><strong>How can you check if any shipments were lost during the merge?</strong></p>
-<div id="b4420baf" class="cell" data-execution_count="23">
+<div id="83b270ab" class="cell" data-execution_count="23">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Checking for data loss:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 1: Compare row counts</span></span>
@@ -1576,7 +1576,7 @@ Method 3: Unique shipment verification
 <p><strong>Answers to Question 2: Key Column Matching</strong></p>
 </blockquote>
 <p><strong>What happens if there are duplicate <code>partID</code> values in the <code>product_line_df</code>?</strong></p>
-<div id="1a8b39d2" class="cell" data-execution_count="24">
+<div id="068d8055" class="cell" data-execution_count="24">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for duplicates in the product_line_df</span></span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Checking for duplicate partIDs in product_line_df:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>duplicate_count <span class="op">=</span> product_line_df[<span class="st">'partID'</span>].duplicated().<span class="bu">sum</span>()</span>
@@ -1667,7 +1667,7 @@ SpareParts      True   767  137  0.179    -1.003  21</code></pre>
 </blockquote>
 <p><strong>What does <code>.groupby('prodCategory')</code> actually do? How does it “split” the data?</strong></p>
 <p><code>.groupby()</code> divides your DataFrame into separate groups based on unique values in the specified column(s). see below example.</p>
-<div id="05bf7d4d" class="cell" data-execution_count="26">
+<div id="2e2098e4" class="cell" data-execution_count="26">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb69"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's see what groupby does step by step</span></span>
 <span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Understanding GroupBy:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1721,7 +1721,7 @@ Rows in Liquids group: 537
 <li><strong>Separates rows</strong> into groups based on those values</li>
 <li><strong>Creates a GroupBy object</strong> (not a DataFrame yet!)</li>
 </ol>
-<div id="13be2425" class="cell" data-execution_count="27">
+<div id="29308d04" class="cell" data-execution_count="27">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb71"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visual demonstration of the split</span></span>
 <span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Visual representation of how data is split:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1768,7 +1768,7 @@ shipID  prodCategory
                              ├─ All rows with 'SpareParts'</code></pre>
 <p><strong>Why do we need to use <code>.agg()</code> after grouping? What happens if you don’t?</strong></p>
 <p><code>.groupby()</code> alone just organizes the data - it doesn’t calculate anything! You need <code>.agg()</code> to tell it WHAT to calculate for each group.</p>
-<div id="4a339c44" class="cell" data-execution_count="28">
+<div id="d556cb91" class="cell" data-execution_count="28">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb74"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Understanding why we need .agg():</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Just groupby - creates a GroupBy object</span></span>
@@ -1799,7 +1799,7 @@ shipID  prodCategory
    You can't display it or use it directly!
 
 2. Trying to use just_grouped directly:
-   &lt;pandas.core.groupby.generic.DataFrameGroupBy object at 0x13d4d1310&gt;
+   &lt;pandas.core.groupby.generic.DataFrameGroupBy object at 0x151a6d310&gt;
    See? Just shows it's a GroupBy object, not the data!
 
 3. Using .agg() to calculate statistics:
@@ -1815,7 +1815,7 @@ SpareParts       767  137  0.178618
 </div>
 </div>
 <p><strong>What happens if you don’t use <code>.agg()</code>?</strong></p>
-<div id="9ababcf3" class="cell" data-execution_count="29">
+<div id="d98cf27a" class="cell" data-execution_count="29">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb76"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Options after .groupby():</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>grouped <span class="op">=</span> shipments_with_category.groupby(<span class="st">'prodCategory'</span>)</span>
@@ -1862,7 +1862,7 @@ Marketables     1850  145  0.078378 -0.803784  21
 SpareParts       767  137  0.178618 -1.002608  21
 
 Option 3: Try to print grouped object without aggregation
-&lt;pandas.core.groupby.generic.DataFrameGroupBy object at 0x13d4aa650&gt;</code></pre>
+&lt;pandas.core.groupby.generic.DataFrameGroupBy object at 0x151a4e3f0&gt;</code></pre>
 </div>
 </div>
 <p><strong>Key Insights:</strong></p>
@@ -1883,7 +1883,7 @@ Option 3: Try to print grouped object without aggregation
 <p><strong>Answers to Question 2: Multi-Level Grouping</strong></p>
 </blockquote>
 <p><strong>What does grouping by <code>['shipID', 'prodCategory']</code> do versus just <code>'prodCategory'</code>?</strong></p>
-<div id="3b341c1b" class="cell" data-execution_count="30">
+<div id="73705198" class="cell" data-execution_count="30">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb79"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Comparing single vs multi-level grouping:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Single-level: Group by prodCategory only</span></span>
@@ -1955,7 +1955,7 @@ Question answered: For EACH shipment, what categories does it contain?</code></p
 <p><strong>Single-level <code>['prodCategory']</code>:</strong> - Groups ALL shipments by category - Answer: “How do categories perform overall?”</p>
 <p><strong>Multi-level <code>['shipID', 'prodCategory']</code>:</strong> - Groups by BOTH shipID AND category - Creates one row per unique combination - Answer: “Which categories are in each specific shipment?”</p>
 <p><strong>Why is this useful?</strong></p>
-<div id="f9736c98" class="cell" data-execution_count="31">
+<div id="a29a5022" class="cell" data-execution_count="31">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Why multi-level grouping matters:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Use multi-level to find shipments with multiple categories</span></span>
@@ -2051,7 +2051,7 @@ Percentage with multiple categories: 23.3%</code></pre>
 </blockquote>
 <p><strong>What business question does this comprehensive analysis answer?</strong></p>
 <p>The comprehensive analysis answers: <strong>“Do customers order products from multiple categories in a single shipment, and how common is this cross-category shopping behavior?”</strong></p>
-<div id="8ff2ca40" class="cell" data-execution_count="33">
+<div id="0658736b" class="cell" data-execution_count="33">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb85"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Understanding the Business Question:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The comprehensive analysis groups by BOTH shipID and prodCategory</span></span>
@@ -2110,7 +2110,7 @@ Examples of multi-category shipments:
 </div>
 <p><strong>This answers critical business questions:</strong> 1. Are customers buying across product categories? 2. How common is cross-category shopping? 3. Do multi-category orders have different service levels i.e.&nbsp;Expedite service level?</p>
 <p><strong>How does grouping by <code>['shipID', 'prodCategory']</code> differ from grouping by just <code>'prodCategory'</code>?</strong></p>
-<div id="2bc4bca0" class="cell" data-execution_count="34">
+<div id="b8546b79" class="cell" data-execution_count="34">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Comparing Single vs Multi-Column Grouping:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Method 1: Group by 'prodCategory' only</span></span>
@@ -2230,7 +2230,7 @@ Method 2: Grouping by ['shipID', 'prodCategory']
 </tr>
 </tbody>
 </table>
-<div id="266fbfe9" class="cell" data-execution_count="35">
+<div id="4e9c4266" class="cell" data-execution_count="35">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb89"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Demonstrate the difference with a specific example</span></span>
 <span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Concrete Example:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -2267,7 +2267,7 @@ Multi-level grouping shows:
 </div>
 </div>
 <p><strong>What insights can ZappTech’s management gain from knowing the percentage of multi-category shipments?</strong></p>
-<div id="5efe114d" class="cell" data-execution_count="36">
+<div id="222fcda0" class="cell" data-execution_count="36">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">Business Insights from Multi-Category Analysis:</span><span class="ch">\n</span><span class="st">"</span>)</span>
 <span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate key metrics</span></span>
@@ -2322,7 +2322,7 @@ MANAGEMENT INSIGHTS:
 <span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a><span class="co"># - Study what triggers cross-category purchases</span></span>
 <span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a><span class="co"># - Create "Complete the Set" campaigns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><strong>7. Revenue Implications:</strong></p>
-<div id="404039c5" class="cell" data-execution_count="37">
+<div id="4933a920" class="cell" data-execution_count="37">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb94"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Assumptions:</span></span>
 <span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="co"># - Single-category order avg: $100</span></span>
 <span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="co"># - Multi-category order avg: $250 (2.5x)</span></span>
@@ -2342,7 +2342,7 @@ MANAGEMENT INSIGHTS:
 <h2 class="anchored" data-anchor-id="professional-visualization-service-level-by-product-category">Professional Visualization: Service Level by Product Category</h2>
 <section id="on-time-delivery-performance-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="on-time-delivery-performance-analysis">On-Time Delivery Performance Analysis</h3>
-<div id="6bd74d9c" class="cell" data-fig-height="6" data-fig-width="10" data-execution_count="38">
+<div id="fe3c82c1" class="cell" data-fig-height="6" data-fig-width="10" data-execution_count="38">
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -2404,7 +2404,7 @@ Overall Average   88.6%
 <p><strong>Your Task:</strong> Create a professional visualization that supports your analysis and demonstrates your understanding of the data.</p>
 <p><strong>Create visualizations showing:</strong> - Service level (on-time percentage) by product category</p>
 <p><strong>Your visualizations should:</strong> - Use clear labels and professional formatting - Support the insights from your discussion questions - Be appropriate for a business audience - Do not <code>echo</code> the code that creates the visualizations</p>
-<div id="297464cf" class="cell" data-execution_count="39">
+<div id="3d712062" class="cell" data-execution_count="39">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb96"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Service level by product category:"</span>)</span>
 <span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(comprehensive_analysis[[<span class="st">'prodCategory'</span>, <span class="st">'is_late'</span>]].groupby(<span class="st">'prodCategory'</span>).agg({<span class="st">'is_late'</span>: <span class="st">'mean'</span>}))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
